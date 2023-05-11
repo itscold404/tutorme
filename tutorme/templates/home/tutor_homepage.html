@@ -1,0 +1,141 @@
+{% extends 'home/homepage_base.html' %} {% block title %}
+{% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %} 
+<title>{% if page_title %}{{ page_title }} - {% endif %}My Django Project</title>
+{% endblock %}
+
+<body>
+
+  {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert">
+                ×
+              </button>
+          </div>
+      {% endfor %}
+  {% endif %}
+  <!-- Searching Container in homepage_base.html -->
+  {% block search_header %}
+  <div class="container-fluid">
+    <h1 class="text-center">Search for a Class to Tutor</h1>
+    <p class="text-center">Browse courses to tutor by name, department, or catalog number and make a post for potential tutees to view.
+    Just click on the class you want to tutor and fill out the post form with the appropiate information!</p>
+  </div>
+  {% endblock %}
+  {% block homepage_containers %}
+
+  <!-- Current Scheduled Sessions and Tutee Requests in Same Row -->
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Container for Current Scheduled Sessions -->
+      <div class="col-sm-6">
+        <h1 class="text-center">Upcoming Sessions</h1>
+        {%if posts|length == 0%}
+          <p class="text-center">You currently have no upcoming sessions.</p>
+        {%else%}
+          {% for post in posts %}
+            <li class="list-group-item"
+              onmouseout="this.style.backgroundColor=''; this.style.color='';">
+              <h5>{{post.classes.name}}: {{post.classes.title}}</h5>
+              {%if post.online == True%}
+                <p><strong>In-person or Online</strong>: Online</p>
+              {%else%}
+                <p><strong>In-person or Online</strong>: In-person</p>
+              {%endif%}
+              <p><strong>Location</strong>: {{post.location}}</p>
+              <p><strong>Start Time</strong>: {{post.sessionRangeStart}}</p>
+              <p><strong>End Time</strong>: {{post.sessionRangeEnd}}</p>
+              <p><strong>Current Capacity</strong>: {{post.current_capacity}} of {{post.max_capacity}}</p>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutorpost{{ forloop.counter }} ">View Full Details</button>
+            </li>
+            <!--source: https://getbootstrap.com/docs/4.0/components/modal/-->
+            <!-- Modal -->
+            <div class="modal fade" id="tutorpost{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{post.classes.name}}: {{post.classes.title}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
+                  <div class="modal-body">
+                    <p><strong>Hourly Fee</strong>: {{post.hourly_fee}}</p>
+                    {%if post.online == True%}
+                      <p><strong>In-person or Online</strong>: Online</p>
+                    {%else%}
+                      <p><strong>In-person or Online</strong>: In-person</p>
+                    {%endif%}
+                    <p><strong>Location</strong>: {{post.location}}</p>
+                    <p><strong>Start Time</strong>: {{post.sessionRangeStart}}</p>
+                    <p><strong>End Time</strong>: {{post.sessionRangeEnd}}</p>
+                    {%if post.comments == ""%}
+                      <p><strong>Your Comments</strong>: No comments</p>
+                    {%else%}
+                      <p><strong>Your Comments</strong>: {{post.comments}}</p>
+                    {%endif%}
+                    <p><strong>Current Capacity</strong>: {{post.current_capacity}} of {{post.max_capacity}}</p>
+                    {%if post.enrolled_tutee.all|length > 0%}
+                      {%if post.enrolled_tutee.all|length == 1%}
+                        <p><strong>Tutee Contact</strong>: {% for tutee in post.enrolled_tutee.all %} {{tutee.first_name}} {{tutee.last_name}}: {{tutee.email}} {% endfor %}</p>
+                      {%else%}
+                        <p><strong>Tutee Contact</strong>: {% for tutee in post.enrolled_tutee.all %} {{tutee.first_name}} {{tutee.last_name}}: {{tutee.email}} | {% endfor %}</p>
+                      {%endif%}
+                    {%endif%}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {%endif%}
+      </div>
+
+      <!-- Container for Session Requests -->
+
+      <div class="col-sm-6">
+        <h1 class="text-center">Session Requests</h1>
+        {%if session_request_list|length == 0%}
+          <p class="text-center">You currently have no session requests.</p>
+        {%else%}
+          {% for session_request in session_request_list %}
+          <li class="list-group-item"
+            onmouseout="this.style.backgroundColor=''; this.style.color='';">
+            {% comment %} <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#session_request{{ forloop.counter }} ">view </button> {% endcomment %}
+            <form method="POST" action="{% url 'tutorme:approving_sessions' %}" id="session-request-approval{{forloop.count}}">
+              {% csrf_token %}
+              <div>
+                <h5>{{session_request.tutee.first_name}} {{session_request.tutee.last_name}} would like to book a session with you!</h5>
+                <p><strong>Class Name</strong>: {{session_request.post.classes.title}}</p>
+                <p><strong>Hourly Fee</strong>: {{session_request.post.hourly_fee}}</p>
+                {%if session_request.post.online == True%}
+                  <p><strong>In-person or Online</strong>: Online</p>
+                {%else%}
+                  <p><strong>In-person or Online</strong>: In-person</p>
+                {%endif%}
+                <p><strong>Location</strong>: {{session_request.post.location}}</p>
+                <p><strong>Start Time</strong>: {{session_request.sessionStart}}</p>
+                <p><strong>End Time</strong>: {{session_request.sessionEnd}}</p>
+                {%if session_request.tutee.about_me != ""%}
+                  <p><strong>About {{session_request.tutee.first_name}}</strong>: {{session_request.tutee.about_me}}</p>
+                {%endif%}
+              </div>
+              <div>
+                <input type="hidden" name="tutee-email" value="{{session_request.tutee.email}}">
+                <input type="hidden" name="tutor-email" value="{{session_request.creator_email}}">
+                <input type="hidden" name="post-id" value="{{session_request.post.hash}}">
+                <button type="submit" class="btn btn-primary submit-button" name="approve">Approve</button>
+                <button type="submit" class="btn btn-primary submit-button" name="deny">Deny</button>
+              </div>
+            </form>
+          </li>
+          {% endfor %}
+        {%endif%}
+      </div>
+  </div>
+  {% endblock %}
+</body>

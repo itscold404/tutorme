@@ -1,0 +1,10 @@
+Client secret:
+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
+
+Client ID:
+360154522859-md9bq13v08t8uo9ljgdtjsg36m91fo62.apps.googleusercontent.com
+
+
+super user
+username: admin1
+password: superuser1111

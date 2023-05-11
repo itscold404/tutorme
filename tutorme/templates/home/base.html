@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TutorMe</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <strong>{{ message.tags }}!</strong>
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                          ×
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% csrf_token %}
+</head>
+
+<style>
+.searchForm {
+  max-width: 600px;
+  margin: auto;
+  padding-top: 40px;
+  padding-bottom: 60px;
+}
+
+</style>
+
+<body>
+  <!-- Nav Bar -->
+  <!--source: https://getbootstrap.com/docs/4.0/components/navbar/-->
+  <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #525E9B;">
+    <a class="navbar-brand" href="{% url 'tutorme:home' %}">TutorMe</a>
+    <div class="container-fluid justify-content-end">
+      <ul class="nav navbar-nav navbar-end">
+        <li class="nav-item">
+            {% if unread_notifications|length == 0 %}
+          <a class="nav-link text-light" href="{% url 'tutorme:go_mailbox' %}">Mailbox</a>
+            {% else %}
+            <a class="nav-link" href="{% url 'tutorme:go_mailbox' %}" style="color:lime;">Mailbox</a>
+            {% endif %}
+        </li>
+        <!-- <li class="nav-item"> Removed because the TutorMe name already redirects home, but if it's needed feel free to uncomment!
+          <a class="nav-link text-light" href="{% url 'tutorme:home' %}">Home</a>
+        </li> -->
+        <li class = "nav-item">
+          <a class="nav-link text-light" href="{% url 'tutorme:profile' %}">Profile</a>
+        </li>
+        <li class="nav-item">
+          <div>
+            <a
+              class="nav-link text-light" href="{% url 'tutorme:logout_user' %}" title="Logout">Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container-fluid">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/esm/popper"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

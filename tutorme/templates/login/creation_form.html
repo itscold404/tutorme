@@ -1,0 +1,71 @@
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Account Creation Page</title>
+	<!-- Link to Bootstrap stylesheet -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- Custom CSS -->
+	<style>
+		.container {
+			margin-top: 50px;
+		}
+	</style>
+</head>
+
+<nav class="navbar navbar-expand-md navbar-dark" style="background-color: #525E9B">
+    <a class="navbar-brand" style="color:white">TutorMe</a>
+    </nav>
+
+{% if messages %}
+	{% for message in messages %}
+      <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Error!</strong>
+        {{message}}
+      </div>
+	{% endfor %}
+{% endif %}
+
+<body>
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-md-6">
+				<h2 class="text-center mb-4">Create An Account</h2>
+				<form action = "" method = POST>
+                    {% csrf_token %}
+					<div class="form-group">
+						<label for="first_name">First Name:</label>
+						<input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your first name">
+					</div>
+					<div class="form-group">
+						<label for="last_name">Last Name:</label>
+						<input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your last name">
+					</div>
+					<div class="form-group">
+						<label for="email">Email:</label>
+						<input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
+					</div>
+					<div class="form-group">
+						<label for="password">Password:</label>
+						<input type="password" class="form-control" id="password" name="password" placeholder="Enter a password">
+					</div>
+					<div class="form-group">
+						<label for="confirm_password">Confirm Password:</label>
+						<input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password">
+					</div>
+					<div>
+						<button type="submit" class="btn btn-primary btn-block mt-4" style="background-color: #525E9B; border:none">Create Account</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- Link to jQuery and Bootstrap JavaScript libraries -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

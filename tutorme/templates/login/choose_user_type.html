@@ -1,0 +1,43 @@
+{% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %} {%load socialaccount%}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Choose User Type</title>
+  </head>
+
+  <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #525E9B;">
+    <a class="navbar-brand">TutorMe</a>
+    </nav>
+
+  <style>
+    .choose-user {
+      padding-top: 40px;
+      padding-left: 480px;
+      padding-right: 480px;
+    }
+  </style>
+
+  <body>
+    <div class="container">
+      <div class="choose-user">
+        <h1 class="text-center mb-4">I am...</h1>
+        {% comment %} include url redirect to back end function {% endcomment %}
+        <form action="{%url 'tutorme:choose_user_type'%}" method="post">
+          {% csrf_token %}
+          <div class="form-group text-center">
+            <input type="radio" id="tutee" name="user_type" value="tutee" />
+            <label for="tutee">Looking for a Tutor</label><br />
+            <br>
+            <input type="radio" id="tutor" name="user_type" value="tutor" />
+            <label for="tutor">A Tutor</label><br />
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-block mt-4">Continue</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

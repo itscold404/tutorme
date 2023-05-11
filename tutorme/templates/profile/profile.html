@@ -1,0 +1,86 @@
+{% extends 'home/base.html' %}
+
+<body>
+    {% block content %}
+    <br>
+    <h2>Welcome, {{ first_name }}</h2>
+    <b class = "mr-2">You are a {{ user_type }}</b> 
+    <a class = "btn btn-secondary btn-sm" href = "{% url 'tutorme:switch' %}">Switch User Type</a>
+    <br>
+    <br>
+    <form action="{%url 'tutorme:edit_user'%}" method="post" id ="editUserForm">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="first_name">First Name</label>
+          <input type="text" class="form-control" id="first_name" name="first_name" placeholder= "{{ first_name }}" maxlength="30">
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" class="form-control" id="last_name" name = "last_name" placeholder= "{{ last_name }}" maxlength="30">
+        </div>
+        <div class="form-group">
+            <label for="email" class="col-sm-2 col-form-label">Email</label>
+            <input type="text" readonly class="form-control-plaintext" name = "email" id="email" value="{{ email }}">
+        </div>
+        <div class="form-group">
+            <label for="about_me">About me</label>
+            <textarea class="form-control" id="about_me" rows="3" name = "about_me" placeholder = "{{ about_me }}" maxlength="499"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary submit-button" id = "subBtn">Save Changes</button>
+    </form>
+
+    <!--source:
+    https://www.w3schools.com/js/js_htmldom_eventlistener.asp
+  -->
+
+  <!-- SOURCE:
+    https://django-filter.readthedocs.io/en/stable/guide/usage.html
+   -->
+<script>
+  console.log("script!!!!");
+    theForm = document.getElementById("editUserForm");
+    const submitButton = document.getElementById('subBtn');
+    submitButton.addEventListener('click', e => {
+        const formChosen = document.getElementById('editUserForm');
+        formChosen.addEventListener('submit', ((e) => {
+          e.preventDefault();
+          validateName('first_name', 'last_name', 'editUserForm');
+        }), {once: true});
+
+      })
+
+
+    function validateName(first_nameID, last_nameID, formID) {
+        fname = document.getElementById(first_nameID).value;
+        lname = document.getElementById(last_nameID).value;
+        if (fname.includes(" ")){
+            alert("Please enter a first name without any whitespace");
+            console.log("first name w whitespace");
+        }
+        else if (lname.includes(" ")) {
+            alert("Please enter a last name without any whitespace");
+            console.log("last name w whitespace");
+        }
+        else{
+        console.log("no whitespace");
+        document.getElementById(formID).submit();
+      }
+    }
+
+
+</script>
+
+<!-- SOURCE
+https://www.javatpoint.com/javascript-alert
+-->
+{% block posts %}
+
+{% endblock %}
+    
+{% endblock %}
+
+
+
+</body>
+
+

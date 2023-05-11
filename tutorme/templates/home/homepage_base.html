@@ -1,0 +1,322 @@
+{% extends 'home/base.html' %}
+{% block title %}
+<title>{% if page_title %}{{ page_title }} - {% endif %}My Django Project</title>
+{% endblock %}
+
+<body>
+    {% block content %}
+    <div class="container-fluid text-center">
+        <div class="searchForm">
+          {% block search_header %}
+          {% endblock %}
+          <form class="form mx-auto my-2" style="width: 500px;" method="POST" action="{% url 'tutorme:search' %}">
+            {%csrf_token%}
+            <!--Department Dropdown-->
+            <!--source: https://getbootstrap.com/docs/4.0/components/dropdowns/-->
+            <div name = "course_num_search" class = "form-inline mx-auto my-1 ">
+              <select class="form-select form-select-lg btn btn-primary dropdown-toggle" name="dept_searched" id="dropdownMenuButton"
+              data-mdb-toggle="dropdown" aria-expanded="false" aria-label="Default select example" style="background-color:white;
+              color:black; height:38px; width:207px; outline:none; text-decoration:none; border-color:#d0d4dc">
+              <option class="dropdown-item" value = "" selected>--Department--</option>
+              <option class="dropdown-item" value="AAS">AAS</option>
+              <option class="dropdown-item" value="ACCT">ACCT</option>
+              <option class="dropdown-item" value="AIRS">AIRS</option>
+              <option class="dropdown-item" value="ALAR">ALAR</option>
+              <option class="dropdown-item" value="AM">AM</option>
+              <option class="dropdown-item" value="AMST">AMST</option>
+              <option class="dropdown-item" value="ANTH">ANTH</option>
+              <option class="dropdown-item" value="APMA">APMA</option>
+              <option class="dropdown-item" value="ARAB">ARAB</option>
+              <option class="dropdown-item" value="ARAD">ARAD</option>
+              <option class="dropdown-item" value="ARAH">ARAH</option>
+              <option class="dropdown-item" value="ARCH">ARCH</option>
+              <option class="dropdown-item" value="ARCY">ARCY</option>
+              <option class="dropdown-item" value="ARH">ARH</option>
+              <option class="dropdown-item" value="ARTH">ARTH</option>
+              <option class="dropdown-item" value="ARTR">ARTR</option>
+              <option class="dropdown-item" value="ARTS">ARTS</option>
+              <option class="dropdown-item" value="ASL">ASL</option>
+              <option class="dropdown-item" value="ASTR">ASTR</option>
+              <option class="dropdown-item" value="BENG">BENG</option>
+              <option class="dropdown-item" value="BIMS">BIMS</option>
+              <option class="dropdown-item" value="BIOC">BIOC</option>
+              <option class="dropdown-item" value="BIOE">BIOE</option>
+              <option class="dropdown-item" value="BIOL">BIOL</option>
+              <option class="dropdown-item" value="BIOM">BIOM</option>
+              <option class="dropdown-item" value="BIOP">BIOP</option>
+              <option class="dropdown-item" value="BME">BME</option>
+              <option class="dropdown-item" value="BUS">BUS</option>
+              <option class="dropdown-item" value="CASS">CASS</option>
+              <option class="dropdown-item" value="CE">CE</option>
+              <option class="dropdown-item" value="CELL">CELL</option>
+              {% comment %} <option class="dropdown-item" value="CGBM">CGBM</option> {% endcomment %}
+              <option class="dropdown-item" value="CHE">CHE</option>
+              <option class="dropdown-item" value="CHEM">CHEM</option>
+              <option class="dropdown-item" value="CHIN">CHIN</option>
+              <option class="dropdown-item" value="CHTR">CHTR</option>
+              <option class="dropdown-item" value="CJ">CJ</option>
+              <option class="dropdown-item" value="CLAS">CLAS</option>
+              <option class="dropdown-item" value="COGS">COGS</option>
+              <option class="dropdown-item" value="COLA">COLA</option>
+              <option class="dropdown-item" value="COMM">COMM</option>
+              <option class="dropdown-item" value="CONC">CONC</option>
+              <option class="dropdown-item" value="CPE">CPE</option>
+              <option class="dropdown-item" value="CPLT">CPLT</option>
+              <option class="dropdown-item" value="CREO">CREO</option>
+              <option class="dropdown-item" value="CS">CS</option>
+              <option class="dropdown-item" value="DANC">DANC</option>
+              <option class="dropdown-item" value="DEM">DEM</option>
+              <option class="dropdown-item" value="DH">DH</option>
+              <option class="dropdown-item" value="DRAM">DRAM</option>
+              <option class="dropdown-item" value="DS">DS</option>
+              <option class="dropdown-item" value="EALC">EALC</option>
+              <option class="dropdown-item" value="EAST">EAST</option>
+              <option class="dropdown-item" value="ECE">ECE</option>
+              <option class="dropdown-item" value="ECON">ECON</option>
+              <option class="dropdown-item" value="EDHS">EDHS</option>
+              <option class="dropdown-item" value="EDIS">EDIS</option>
+              <option class="dropdown-item" value="EDLF">EDLF</option>
+              <option class="dropdown-item" value="EDNC">EDNC</option>
+              <option class="dropdown-item" value="EGMT">EGMT</option>
+              <option class="dropdown-item" value="ELA">ELA</option>
+              <option class="dropdown-item" value="ENAM">ENAM</option>
+              <option class="dropdown-item" value="ENCR">ENCR</option>
+              <option class="dropdown-item" value="ENCW">ENCW</option>
+              <option class="dropdown-item" value="ENEC">ENEC</option>
+              <option class="dropdown-item" value="ENGL">ENGL</option>
+              <option class="dropdown-item" value="ENGN">ENGN</option>
+              <option class="dropdown-item" value="ENGR">ENGR</option>
+              <option class="dropdown-item" value="ENLS">ENLS</option>
+              <option class="dropdown-item" value="ENMC">ENMC</option>
+              <option class="dropdown-item" value="ENMD">ENMD</option>
+              <option class="dropdown-item" value="ENNC">ENNC</option>
+              <option class="dropdown-item" value="ENPG">ENPG</option>
+              <option class="dropdown-item" value="ENPW">ENPW</option>
+              <option class="dropdown-item" value="ENRN">ENRN</option>
+              <option class="dropdown-item" value="ENSP">ENSP</option>
+              <option class="dropdown-item" value="ENTP">ENTP</option>
+              <option class="dropdown-item" value="ENVH">ENVH</option>
+              <option class="dropdown-item" value="ENWR">ENWR</option>
+              <option class="dropdown-item" value="EP">EP</option>
+              <option class="dropdown-item" value="ESL">ESL</option>
+              <option class="dropdown-item" value="ETP">ETP</option>
+              <option class="dropdown-item" value="EURS">EURS</option>
+              <option class="dropdown-item" value="EVAT">EVAT</option>
+              <option class="dropdown-item" value="EVEC">EVEC</option>
+              <option class="dropdown-item" value="EVGE">EVGE</option>
+              <option class="dropdown-item" value="EVHY">EVHY</option>
+              <option class="dropdown-item" value="EVSC">EVSC</option>
+              <option class="dropdown-item" value="FORU">FORU</option>
+              <option class="dropdown-item" value="FREN">FREN</option>
+              <option class="dropdown-item" value="FRLN">FRLN</option>
+              <option class="dropdown-item" value="FRTR">FRTR</option>
+              <option class="dropdown-item" value="GBAC">GBAC</option>
+              <option class="dropdown-item" value="GBUS">GBUS</option>
+              <option class="dropdown-item" value="GCCS">GCCS</option>
+              <option class="dropdown-item" value="GCNL">GCNL</option>
+              <option class="dropdown-item" value="GCOM">GCOM</option>
+              <option class="dropdown-item" value="GDS">GDS</option>
+              <option class="dropdown-item" value="GERM">GERM</option>
+              <option class="dropdown-item" value="GETR">GETR</option>
+              <option class="dropdown-item" value="GHSS">GHSS</option>
+              <option class="dropdown-item" value="GNUR">GNUR</option>
+              <option class="dropdown-item" value="GREE">GREE</option>
+              <option class="dropdown-item" value="GSAS">GSAS</option>
+              <option class="dropdown-item" value="GSCI">GSCI</option>
+              <option class="dropdown-item" value="GSGS">GSGS</option>
+              <option class="dropdown-item" value="GSMS">GSMS</option>
+              <option class="dropdown-item" value="GSSJ">GSSJ</option>
+              <option class="dropdown-item" value="GSVS">GSVS</option>
+              <option class="dropdown-item" value="HBIO">HBIO</option>
+              <option class="dropdown-item" value="HEBR">HEBR</option>
+              <option class="dropdown-item" value="HETR">HETR</option>
+              <option class="dropdown-item" value="HHE">HHE</option>
+              <option class="dropdown-item" value="HIAF">HIAF</option>
+              <option class="dropdown-item" value="HIEA">HIEA</option>
+              <option class="dropdown-item" value="HIEU">HIEU</option>
+              <option class="dropdown-item" value="HILA">HILA</option>
+              <option class="dropdown-item" value="HIME">HIME</option>
+              <option class="dropdown-item" value="HIND">HIND</option>
+              <option class="dropdown-item" value="HISA">HISA</option>
+              <option class="dropdown-item" value="HIST">HIST</option>
+              <option class="dropdown-item" value="HIUS">HIUS</option>
+              <option class="dropdown-item" value="HR">HR</option>
+              <option class="dropdown-item" value="HSCI">HSCI</option>
+              <option class="dropdown-item" value="HUMS">HUMS</option>
+              <option class="dropdown-item" value="IHGC">IHGC</option>
+              <option class="dropdown-item" value="IMP">IMP</option>
+              <option class="dropdown-item" value="INST">INST</option>
+              <option class="dropdown-item" value="ISBU">ISBU</option>
+              <option class="dropdown-item" value="ISCP">ISCP</option>
+              <option class="dropdown-item" value="ISED">ISED</option>
+              <option class="dropdown-item" value="ISHU">ISHU</option>
+              <option class="dropdown-item" value="ISIN">ISIN</option>
+              <option class="dropdown-item" value="ISLS">ISLS</option>
+              <option class="dropdown-item" value="ISSS">ISSS</option>
+              <option class="dropdown-item" value="IT">IT</option>
+              <option class="dropdown-item" value="ITAL">ITAL</option>
+              <option class="dropdown-item" value="ITTR">ITTR</option>
+              <option class="dropdown-item" value="JAPN">JAPN</option>
+              <option class="dropdown-item" value="JPTR">JPTR</option>
+              <option class="dropdown-item" value="JWST">JWST</option>
+              <option class="dropdown-item" value="KICH">KICH</option>
+              <option class="dropdown-item" value="KINE">KINE</option>
+              <option class="dropdown-item" value="KLPA">KLPA</option>
+              <option class="dropdown-item" value="KOR">KOR</option>
+              <option class="dropdown-item" value="KRTR">KRTR</option>
+              <option class="dropdown-item" value="LAR">LAR</option>
+              <option class="dropdown-item" value="LASE">LASE</option>
+              <option class="dropdown-item" value="LAST">LAST</option>
+              <option class="dropdown-item" value="LATI">LATI</option>
+              <option class="dropdown-item" value="LAW">LAW</option>
+              <option class="dropdown-item" value="LING">LING</option>
+              <option class="dropdown-item" value="LNGS">LNGS</option>
+              <option class="dropdown-item" value="LPPA">LPPA</option>
+              <option class="dropdown-item" value="LPPL">LPPL</option>
+              <option class="dropdown-item" value="LPPP">LPPP</option>
+              <option class="dropdown-item" value="LPPS">LPPS</option>
+              <option class="dropdown-item" value="MAE">MAE</option>
+              <option class="dropdown-item" value="MATH">MATH</option>
+              <option class="dropdown-item" value="MDST">MDST</option>
+              <option class="dropdown-item" value="MED">MED</option>
+              <option class="dropdown-item" value="MESA">MESA</option>
+              <option class="dropdown-item" value="MEST">MEST</option>
+              <option class="dropdown-item" value="MICR">MICR</option>
+              <option class="dropdown-item" value="MISC">MISC</option>
+              <option class="dropdown-item" value="MSE">MSE</option>
+              <option class="dropdown-item" value="MSP">MSP</option>
+              <option class="dropdown-item" value="MUBD">MUBD</option>
+              <option class="dropdown-item" value="MUEN">MUEN</option>
+              <option class="dropdown-item" value="MUPF">MUPF</option>
+              <option class="dropdown-item" value="MUSI">MUSI</option>
+              <option class="dropdown-item" value="NASC">NASC</option>
+              <option class="dropdown-item" value="NCAR">NCAR</option>
+              <option class="dropdown-item" value="NCBM">NCBM</option>
+              <option class="dropdown-item" value="NCBS">NCBS</option>
+              <option class="dropdown-item" value="NCCJ">NCCJ</option>
+              <option class="dropdown-item" value="NCCS">NCCS</option>
+              <option class="dropdown-item" value="NCDS">NCDS</option>
+              <option class="dropdown-item" value="NCED">NCED</option>
+              <option class="dropdown-item" value="NCEN">NCEN</option>
+              <option class="dropdown-item" value="NCFA">NCFA</option>
+              <option class="dropdown-item" value="NCFL">NCFL</option>
+              <option class="dropdown-item" value="NCHP">NCHP</option>
+              <option class="dropdown-item" value="NCIS">NCIS</option>
+              <option class="dropdown-item" value="NCLE">NCLE</option>
+              <option class="dropdown-item" value="NCPD">NCPD</option>
+              <option class="dropdown-item" value="NCPH">NCPH</option>
+              <option class="dropdown-item" value="NCPR">NCPR</option>
+              <option class="dropdown-item" value="NCSS">NCSS</option>
+              <option class="dropdown-item" value="NCTH">NCTH</option>
+              <option class="dropdown-item" value="NESC">NESC</option>
+              <option class="dropdown-item" value="NMVS">NMVS</option>
+              <option class="dropdown-item" value="NUCO">NUCO</option>
+              <option class="dropdown-item" value="NUIP">NUIP</option>
+              <option class="dropdown-item" value="NURS">NURS</option>
+              <option class="dropdown-item" value="PASH">PASH</option>
+              <option class="dropdown-item" value="PATH">PATH</option>
+              <option class="dropdown-item" value="PAVS">PAVS</option>
+              <option class="dropdown-item" value="PC">PC</option>
+              <option class="dropdown-item" value="PERS">PERS</option>
+              <option class="dropdown-item" value="PETR">PETR</option>
+              <option class="dropdown-item" value="PHAR">PHAR</option>
+              <option class="dropdown-item" value="PHIL">PHIL</option>
+              <option class="dropdown-item" value="PHS">PHS</option>
+              <option class="dropdown-item" value="PHY">PHY</option>
+              <option class="dropdown-item" value="PHYS">PHYS</option>
+              <option class="dropdown-item" value="PLAC">PLAC</option>
+              <option class="dropdown-item" value="PLAD">PLAD</option>
+              <option class="dropdown-item" value="PLAN">PLAN</option>
+              <option class="dropdown-item" value="PLAP">PLAP</option>
+              <option class="dropdown-item" value="PLCP">PLCP</option>
+              <option class="dropdown-item" value="PLIR">PLIR</option>
+              <option class="dropdown-item" value="PLPT">PLPT</option>
+              <option class="dropdown-item" value="PLSK">PLSK</option>
+              <option class="dropdown-item" value="PMCC">PMCC</option>
+              <option class="dropdown-item" value="POL">POL</option>
+              <option class="dropdown-item" value="PORT">PORT</option>
+              <option class="dropdown-item" value="POTR">POTR</option>
+              <option class="dropdown-item" value="PPL">PPL</option>
+              <option class="dropdown-item" value="PSCJ">PSCJ</option>
+              <option class="dropdown-item" value="PSED">PSED</option>
+              <option class="dropdown-item" value="PSHM">PSHM</option>
+              <option class="dropdown-item" value="PSHP">PSHP</option>
+              <option class="dropdown-item" value="PSLP">PSLP</option>
+              <option class="dropdown-item" value="PSLS">PSLS</option>
+              <option class="dropdown-item" value="PSPA">PSPA</option>
+              <option class="dropdown-item" value="PSPL">PSPL</option>
+              <option class="dropdown-item" value="PSPM">PSPM</option>
+              <option class="dropdown-item" value="PSPS">PSPS</option>
+              <option class="dropdown-item" value="PSSS">PSSS</option>
+              <option class="dropdown-item" value="PST">PST</option>
+              <option class="dropdown-item" value="PSTS">PSTS</option>
+              <option class="dropdown-item" value="PSWD">PSWD</option>
+              <option class="dropdown-item" value="PSYC">PSYC</option>
+              <option class="dropdown-item" value="RELA">RELA</option>
+              <option class="dropdown-item" value="RELB">RELB</option>
+              <option class="dropdown-item" value="RELC">RELC</option>
+              <option class="dropdown-item" value="RELG">RELG</option>
+              <option class="dropdown-item" value="RELH">RELH</option>
+              <option class="dropdown-item" value="RELI">RELI</option>
+              <option class="dropdown-item" value="RELJ">RELJ</option>
+              <option class="dropdown-item" value="RELS">RELS</option>
+              <option class="dropdown-item" value="RSC">RSC</option>
+              <option class="dropdown-item" value="RUSS">RUSS</option>
+              <option class="dropdown-item" value="RUTR">RUTR</option>
+              <option class="dropdown-item" value="SANS">SANS</option>
+              <option class="dropdown-item" value="SARC">SARC</option>
+              <option class="dropdown-item" value="SAST">SAST</option>
+              <option class="dropdown-item" value="SATR">SATR</option>
+              <option class="dropdown-item" value="SEC">SEC</option>
+              <option class="dropdown-item" value="SEMS">SEMS</option>
+              <option class="dropdown-item" value="SLAV">SLAV</option>
+              <option class="dropdown-item" value="SLFK">SLFK</option>
+              <option class="dropdown-item" value="SLTR">SLTR</option>
+              <option class="dropdown-item" value="SOC">SOC</option>
+              <option class="dropdown-item" value="SPAN">SPAN</option>
+              <option class="dropdown-item" value="SPTR">SPTR</option>
+              <option class="dropdown-item" value="STAT">STAT</option>
+              <option class="dropdown-item" value="STS">STS</option>
+              <option class="dropdown-item" value="SWAH">SWAH</option>
+              <option class="dropdown-item" value="SYS">SYS</option>
+              <option class="dropdown-item" value="TBTN">TBTN</option>
+              <option class="dropdown-item" value="TURK">TURK</option>
+              <option class="dropdown-item" value="UD">UD</option>
+              <option class="dropdown-item" value="UKR">UKR</option>
+              <option class="dropdown-item" value="UNST">UNST</option>
+              <option class="dropdown-item" value="URDU">URDU</option>
+              <option class="dropdown-item" value="USEM">USEM</option>
+              <option class="dropdown-item" value="WGS">WGS</option>
+              <option class="dropdown-item" value="XHOS">XHOS</option>
+              <option class="dropdown-item" value="YIDD">YIDD</option>
+              <option class="dropdown-item" value="YITR">YITR</option>
+              <option class="dropdown-item" value="ZFOR">ZFOR</option>
+            </select>
+            <input
+              class="form-control mr-sm-2"
+              style="width: 285px;"
+              type="search"
+              name="catalog_searched"
+              placeholder="Catalog #"
+              aria-label="Search"
+              maxlength="4"
+            />
+
+            </div>
+            
+            <input
+            class="form-control my-1"
+              type="search"
+              name="course_name_searched"
+              placeholder="Course Name"
+              aria-label="Search"
+              maxlength="100" 
+              />
+            <button class="btn btn-info btn-block" type="submit">Search</button>
+          </form>
+        </div>
+    </div>
+    {% block homepage_containers %}
+    {% endblock %}
+    {% endblock %}
+</body>

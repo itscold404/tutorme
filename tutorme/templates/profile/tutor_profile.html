@@ -1,0 +1,131 @@
+{% extends 'profile/profile.html' %}
+
+{% block posts %}
+
+<!-- SOURCE 
+https://docs.djangoproject.com/en/4.2/ref/templates/language/-->
+<br>
+<br>
+<h2>Your Posts</h2>
+<ul class="list-group">
+  {%if posts|length == 0%}
+    <p>You currently have no published posts.</p>
+  {% else %}
+  {% for p in posts %}
+  {% if p.max_capacity == p.current_capacity%} 
+  <li class="list-group-item" style="background-color:rgb(175, 226, 175)">
+    <h4>Fully Booked!</h4>
+  {%else%}
+  <li class="list-group-item">
+  {%endif%}
+    <h5 class="card-title">{{ p.classes.name }}: {{ p.classes.title }}</h5>
+    <p class="card-text"><strong>Date & Time</strong>: {{p.sessionRangeStart}} to {{p.sessionRangeEnd}}</p>
+      <p><strong>Rate</strong>:   ${{ p.hourly_fee}}/hr </p>
+      {%if p.online%}
+        <p class="card-text"><strong>In-person or Online</strong>: Online</p>
+      {%else%}
+        <p class="card-text"><strong>In-person or Online</strong>: In-person</p>
+      {%endif%}
+      <p><strong>Location</strong>: {{ p.location }}</p>
+      <p class="card-text"><strong>Current capacity</strong>: {{p.current_capacity}}/{{p.max_capacity}}</p>
+      {%if p.comments == ""%}
+        <p class="card-text"><strong>Your Comments</strong>: No comments</p>
+      {%else%}
+        <p class="card-text"><strong>Your Comments</strong>: {{p.comments}}</p>
+      {%endif%}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal{{ p.classes.class_id }}">Edit</button>
+  </li>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal{{ p.classes.class_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Post for {{ p.classes.name }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        
+        <form method="POST" action="{% url 'tutorme:edit_posts' %}" id="{{ p.classes.class_id }}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <input type="hidden" name="hash" value="{{p.hash}}">
+              <b>Please enter any values you would like to change</b>
+              <div class="form-group">
+                <label for="input1">What would your hourly rate to tutor this class be?</label>
+                <input type="number" class="form-control" name="hourly_fee" placeholder="{{ p.hourly_fee}}" max="500" step = 0.01>
+              </div>
+              <div class="form-group">
+                {% if p.online %}
+                <label for="input2">Would you like to tutor virtually/online?</label>
+                <input type="checkbox" class="form-control" name="online" value="online" checked>
+                {%else%}
+                <label for="input2">Would you be willing to tutor virtually/online?</label>
+                <input type="checkbox" class="form-control" name="online" value="online" >
+                {%endif%}
+              </div>
+              <div class="form-group">
+                <label for="location">Where would you like to tutor? If online, enter the platform (Zoom, Discord, etc.)</label>
+                <input type="text" class="form-control" name="location" placeholder="{{p.location}}">
+              </div>
+              <div class="form-group">
+                <label for="group-size">How many students can you want to tutor at once(min 1, max 5)?</label>
+                <input type="number" class="form-control" name="group-size" placeholder="{{p.max_capacity}}" max="5">
+              </div>
+              <div class="form-group">
+                <label for="contact_info">What is your contact info?</label>
+                <input type="text" class="form-control" name="contact_info" placeholder="{{p.contact_info}}">
+              </div>
+              <div class="form-group">
+                <label for="comments">Any comments or additional information on your post?</label>
+                <input type="text" class="form-control" name="comments" placeholder="{{p.comments}}">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary submit-button">Save Changes</button>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+
+  {% endfor %}
+  {% endif %}
+
+
+
+  <script>
+    const forms=document.querySelectorAll('.post-creation-form');
+    
+    forms.forEach(form =>{
+      const submitButton = form.querySelector('.submit-button');
+      submitButton.addEventListener('click', e => {
+        const formID = e.target.closest('form').id;
+        
+        const formChosen = document.getElementById(formID);
+        formChosen.addEventListener('submit', (e) => {
+          e.preventDefault();
+          validateDateTime(formID);
+        });
+
+      })
+    })
+
+
+  </script>
+</ul>
+
+  
+  
+{% endblock %}
+
+
+
+
+ 
+
+
+

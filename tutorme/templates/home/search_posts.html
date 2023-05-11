@@ -1,0 +1,293 @@
+{% extends 'home/base.html' %}
+
+{% block title %}
+<title>{% if page_title %}{{ page_title }} - {% endif %}My Django Project - Home</title>
+{% endblock %}
+
+{% block content %}
+<br>
+<head>
+  <div class="mx-auto" style="text-align:center">
+    {% if posts %}
+    <h1> Showing Posts for {{ searched }} </h1>
+    {%else %}
+    <h1>No posts for {{ searched }}</h1>
+    {%endif%}
+  </div>
+</head>
+<br>
+
+<ul class="list-group">
+  {% for resp in posts %}
+  <div>
+    {% if resp.creatorEmail != request.user.email %}
+    {% if resp in booked_posts %}
+    <li class="list-group-item" style="background-color:rgb(175, 226, 175)">
+      <h3>Booked!</h3>
+      {%else %}
+    <li class="list-group-item"
+      {% comment %} onmouseover="this.style.backgroundColor='#888'; this.style.color='#fff'; this.style.cursor='pointer';" {% endcomment %}
+      onmouseout="this.style.backgroundColor=''; this.style.color='';">
+      {% endif %}
+      <h5 class="card-title"> {{ resp.classes.name }}: {{resp.classes.title}} || {{ resp.creatorName }}</h5>
+      <h6 class="card-subtitle mb-2 text-muted"> ${{ resp.hourly_fee}}/hr</h6>
+      <p><strong>Start</strong>: {{resp.sessionRangeStart}}</p>
+      <p><strong>Finish</strong>: {{resp.sessionRangeEnd}}</p>
+      {%if resp.online == True%}
+        <p class="card-text"> <strong>In-person or Online</strong>: Online</p>
+      {%else%}
+        <p class="card-text"> <strong>In-person or Online</strong>: In-person</p>
+      {%endif%}
+      <p><strong>Location</strong>: {{resp.location}}</p>
+      <p class="card-text"> <strong>Current capacity</strong>: {{resp.current_capacity}}/{{resp.max_capacity}}</p>
+      {%if resp.comments != ""%}
+        <p class="card-text"> <strong>Comments</strong>: {{ resp.comments }}</p>
+      {%endif%}
+
+      {%if resp.current_capacity < resp.max_capacity%}
+        {% if resp in booked_posts %}
+        {% elif resp in already_requested_posts %}
+        <button
+        type="button"
+        class="btn btn-primary"
+        disabled
+      >
+        Requested
+      </button>
+        {%else%}
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#post-session{{ forloop.counter}}"
+        >
+          Book Class
+        </button>
+
+        {%endif%}
+        
+        <!--source: https://getbootstrap.com/docs/4.0/components/modal/-->
+        {% comment %} <!-- Modal --> {% endcomment %}
+        <div class="modal fade" id="post-session{{ forloop.counter}}" tabindex="-1" 
+        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{resp.classes.name}} Session with {{resp.creatorName}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              {%if resp.max_capacity == 1%}
+                <form method="POST" class="session-creation-form" action="{% url 'tutorme:book_tutoring_session'%}"
+                  id = "session-creation-form{{forloop.counter}}"> 
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <input type="hidden" name="post-id" value="{{resp.hash}}">
+                    <input type="hidden" name="creator-email" value="{{resp.creatorEmail}}">
+                    <input type="hidden" name="searched" value="{{searched}}">
+                    <input type="hidden" name="dep_number" value="{{num}}">
+                    <input type = "hidden" name = "by_name" value = "{{by_name}}">
+                    <p>Schedule a time between 
+                      {{resp.sessionRangeStart}} 
+                      and 
+                      {{resp.sessionRangeEnd}}
+                    </p>
+
+                    <div class="form-group">
+                      <label for="session-creation-form{{forloop.counter}}start">What date and time would you like to start the session?</label>
+                      <input type="datetime-local" id="session-creation-form{{forloop.counter}}start" 
+                        name="session-start-time" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="session-creation-form{{forloop.counter}}end">What date and time would you like to end the session?</label>
+                      <input type="datetime-local" id="session-creation-form{{forloop.counter}}end" 
+                        name="session-end-time" required>
+                    </div>
+                    
+                    <input type="hidden" name="post-start-time" value="{{resp.sessionRangeStart}}" 
+                      id="session-creation-form{{forloop.counter}}post-start">
+                    <input type="hidden" name="post-end-time" value="{{resp.sessionRangeEnd}}" 
+                      id="session-creation-form{{forloop.counter}}post-end">
+                    <input type="hidden" name="isGroup" value="false" 
+                      id="session-creation-form{{forloop.counter}}isGroup">
+
+                    <div class="modal-footer">
+                  
+                      <button type="submit" class="btn btn-primary submit-create-session">Book Session</button>
+                      
+                    
+                    </div>
+
+                  </div>
+                </form>
+                
+              {%elif resp.max_capacity > 1%}
+                <form method="POST" class="session-creation-form" action="{% url 'tutorme:book_tutoring_session'%}"
+                  id = "session-creation-form{{forloop.counter}}"> 
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <input type="hidden" name="post-id" value="{{resp.hash}}">
+                    <input type="hidden" name="creator-email" value="{{resp.creatorEmail}}">
+                    <input type="hidden" name="searched" value="{{searched}}">
+                    <input type="hidden" name="dep_number" value="{{num}}">
+                    <input type ="hidden" name ="by_name" value = "{{by_name}}">
+                    <p> Class: {{resp.classes.title}}</p>
+                    <p>The session is between 
+                      {{resp.sessionRangeStart}} 
+                      and 
+                      {{resp.sessionRangeEnd}}
+                    </p>
+                    <p> Tutor: {{resp.creatorName}}</p>
+                    
+                    <input type="hidden" name="post-start-time" value="{{resp.sessionRangeStart}}" 
+                      id="session-creation-form{{forloop.counter}}post-start">
+                    <input type="hidden" name="post-end-time" value="{{resp.sessionRangeEnd}}" 
+                      id="session-creation-form{{forloop.counter}}post-end">
+                      
+                    <input type="hidden" name="isGroup" value="true" 
+                      id="session-creation-form{{forloop.counter}}isGroup">
+
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary submit-create-session">Book Session</button>
+                    </div>
+
+                  </div>
+                </form>
+              {%endif%}
+
+            </div>
+          </div>
+        </div>
+
+      {%else%}
+        <b class="card-text"> Session at max capacity </b>
+      
+      {%endif%}
+      {%endif%}
+    </li>
+  <div>
+  {% endfor %}
+</ul>
+
+  {% comment %} {% endfor %} {% endcomment %}
+  <!--source:
+    https://www.w3schools.com/js/js_htmldom_eventlistener.asp
+    https://stackoverflow.com/questions/43234931/avoid-from-adding-event-listeners-several-times
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions  
+  -->
+  <script>
+    const forms=document.querySelectorAll('.session-creation-form');
+    
+    forms.forEach(form =>{
+      const submitButton = form.querySelector('.submit-create-session');
+      submitButton.addEventListener('click', e => {
+        const formID = e.target.closest('form').id;
+        
+        const formChosen = document.getElementById(formID);
+        formChosen.addEventListener('submit', ((e) => {
+          e.preventDefault();
+          validateSession(formID);
+        }), {once: true});
+
+      })
+    })
+
+    function namesToTime(dateString){
+
+      if (dateString.includes("noon")) {
+        let dateStr = dateString.replace(/noon/i, '12:00 PM');
+        return dateStr;
+      }
+      
+      else if (dateString.includes("midnight")) {
+        let dateStr = dateString.replace(/midnight/i, '12:00 AM');
+        return dateStr;
+      }
+      else{
+        return dateString;
+      }
+    };
+
+    function parseDate(dateString) {
+      console.log("parameter passed in: " + dateString);
+      const dateParts = dateString.match(/(\w+)(.*)\s(\d+),\s(\d+),\s(\d+):(\d+)\s(\w+)/);
+      console.log("date parts " + dateParts);
+      const months = {
+        'Jan': '01', 'Feb': '02', 'March': '03', 'April': '04', 'May': '05', 'June': '06',
+        'July': '07', 'Aug': '08', 'Sept': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+      };
+      
+      const month = months[dateParts[1]];
+      const day = String(parseInt(dateParts[3], 10)).padStart(2, '0');
+      const year = parseInt(dateParts[4], 10);
+      let hour = parseInt(dateParts[5], 10);
+      const minute = String(parseInt(dateParts[6], 10)).padStart(2, '0');
+      const isPM = dateParts[7].toLowerCase() === 'p';
+
+      if (hour === 12) {
+        hour = isPM ? 12 : 0;
+      } else if (isPM) {
+        hour += 12;
+      }
+      hour = String(hour).padStart(2, '0');
+
+      return `${year}-${month}-${day}T${hour}:${minute}`;
+    }
+
+    function validateSession(formID){
+      console.clear();
+      console.log("validating!!");
+      const isGroup = document.getElementById(formID + "isGroup").value;
+
+      if(isGroup == "false"){
+        console.log("not group session");
+        const tuteeStartTime = document.getElementById(formID + "start").value;
+        const tuteeEndTime = document.getElementById(formID + "end").value;
+        const postStartTime = document.getElementById(formID + "post-start").value;
+        const postEndTime =  document.getElementById(formID + "post-end").value;
+
+        const tuteeStart = new Date(tuteeStartTime);
+        const tuteeEnd = new Date(tuteeEndTime);
+        const postStart =  new Date(parseDate(namesToTime(postStartTime)));
+        const postEnd =  new Date(parseDate(namesToTime(postEndTime)));
+
+        if(tuteeStart < postStart){
+          console.log("tuteeStart < postStart");
+          alert("Select a start date/time after the start date/time specified by the post");
+        }
+        else if(tuteeStart >= postEnd){
+          console.log("tuteeStart >= postEnd");
+          alert("Select a start date/time before the end date/time specified by the post");
+        }
+        else if(tuteeEnd <= postStart){
+          console.log("tuteeEnd <= postStart");
+          alert("Select an end date/time after the start date/time specified by the post");
+        }
+        else if(tuteeEnd > postEnd){
+          console.log("tuteeEnd > postEnd");
+          alert("Select an end date/time before the end date/time specified by the post");
+        }
+        else if(tuteeStart >= tuteeEnd){
+          console.log("tuteeStart >= tuteeEnd");
+          alert("Your start session date/time should be before your end session date/time");
+        }
+        else{
+          console.log("seems ok");
+          document.getElementById(formID).submit();
+        }
+      }
+
+      else if (isGroup == "true"){
+        console.log("seems ok");
+        document.getElementById(formID).submit();
+      }
+      
+    }
+  </script>
+
+
+
+{% endblock %}

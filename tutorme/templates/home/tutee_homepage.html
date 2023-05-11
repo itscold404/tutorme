@@ -1,0 +1,293 @@
+{% extends 'home/homepage_base.html' %} {% block title %}
+<title>{% if page_title %}{{ page_title }} - {% endif %}My Django Project</title>
+{% endblock %}
+
+<body>
+  <!-- Searching Container in homepage_base.html -->
+  {% block search_header %}
+  <div class="container-fluid">
+    <h1 class="text-center">Search for a Tutor</h1>
+    <p class="text-center"> Browse for a class by name, department, or catalog number and then view potential tutors.
+    Just click on the class you want to be tutored in and all available tutors will be displayed
+    with information about their sessions!</p>
+  </div>
+  {% endblock %}
+  {% block homepage_containers %}
+
+  <!-- Current Scheduled Sessions and Pending/Declined Requests in Same Row -->
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Container for Current Scheduled Sessions -->
+      <div class="col-sm-6">
+        <h1 class="text-center">Upcoming Sessions</h1>
+        {%if approved_sessions_list|length == 0%}
+          <p class="text-center">You currently have no upcoming sessions.</p>
+        {%else%}
+          {% comment %} ACCEPTED_SESSIONS IS A POST OBJECT NOT A SESSION OBJECT!!! {% endcomment %}
+          {% for post in approved_sessions_list %}
+          <li
+            class="list-group-item"
+            onmouseout="this.style.backgroundColor=''; this.style.color='';"
+          >
+            <h5>{{post.classes.name}}: {{post.classes.title}}</h5>
+            <p> </p>
+            <p><strong>Tutor</strong>: {{post.creatorName}}</p>
+            {%if post.online == True%}
+              <p><strong>In-person or Online</strong>: Online</p>
+            {%else%}
+              <p><strong>In-person or Online</strong>: In-person</p>
+            {%endif%}
+            <p><strong>Location</strong>: {{post.location}}</p>
+            <p><strong>Start Time</strong>: {{post.sessionRangeStart}}</p>
+            <p><strong>End Time</strong>: {{post.sessionRangeEnd}}</p>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#post{{ forloop.counter}}"
+            >
+              View Full Details
+            </button>
+          </li>
+
+          <!--source: https://getbootstrap.com/docs/4.0/components/modal/-->
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="post{{ forloop.counter}}"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">
+                    {{post.classes.name}} Session with {{post.creatorName}}
+                  </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                <form class="post-information-form" id="post-info-accept{{forloop.counter}}">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <p><strong>Tutor</strong>: {{post.creatorName}}</p>
+                    <p><strong>Class Name</strong>: {{post.classes.title}}</p>
+                    <p><strong>Hourly Fee</strong>: {{post.hourly_fee}}</p>
+                    {%if post.online == True%}
+                      <p><strong>In-person or Online</strong>: Online</p>
+                    {%else%}
+                      <p><strong>In-person or Online</strong>: In-person</p>
+                    {%endif%}
+                    <p><strong>Location</strong>: {{post.location}}</p>
+                    <p><strong>Start Time</strong>: {{post.sessionRangeStart}}</p>
+                    <p><strong>End Time</strong>: {{post.sessionRangeEnd}}</p>
+                    {%if post.comments == ""%}
+                    <p><strong>Tutor Comments</strong>: No comments</p>
+                    {%else%}
+                      <p><strong>Tutor Comments</strong>: {{post.comments}}</p>
+                    {%endif%}
+                    <p><strong>Current Capacity</strong>: {{post.current_capacity}} of {{post.max_capacity}}</p>
+                    <p><strong>Tutor Contact</strong>: {{post.creatorEmail}}</p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          {%endfor%}
+        {%endif%}
+      </div>
+
+      <!-- Container for Pending Session Requests -->
+      <div class="col-sm-6">
+        <h1 class="text-center">Pending & Declined Requests</h1>
+        {%if declined_sessions_list|length == 0  and pending_sessions_list|length == 0%}
+          <p class="text-center">You currently have no pending or declined session requests.</p>
+        {%else%}
+          {% for declined_session in declined_sessions_list %}
+          <li
+            class="list-group-item"
+            onmouseout="this.style.backgroundColor=''; this.style.color='';"
+          >
+            <p>
+              {{declined_session.post.classes.name}} Session with
+              {{declined_session.post.creatorName}} was declined.
+            </p>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#decline{{ forloop.counter}}"
+            >
+              View Full Details
+            </button>
+          </li>
+
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="decline{{ forloop.counter}}"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">
+                    {{declined_session.post.classes.name}} Session with
+                    {{declined_session.post.creatorName}}
+                  </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                {% comment %} option to delete post here {% endcomment %}
+                <form
+                  class="post-information-form"
+                  method="POST"
+                  action="{% url 'tutorme:deleting_session' %}"
+                  id="post-info-decline{{forloop.count}}"
+                >
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    {% comment %} <h3>Reason for decline:</h3>
+                    <p>{{declined_session.tutor_message}}</p> {% endcomment %}
+                    <h5>This session request has been declined.</h5>
+                    <p><strong>Tutor</strong>: {{declined_session.post.creatorName}}</p>
+                    <p><strong>Hourly Fee</strong>: {{declined_session.post.hourly_fee}}</p>
+                    {%if declined_session.post.online == True%}
+                      <p><strong>In-person or Online</strong>: Online</p>
+                    {%else%}
+                      <p><strong>In-person or Online</strong>: In-person</p>
+                    {%endif%}
+                    <p><strong>Location</strong>: {{declined_session.post.location}}</p>
+                    <p><strong>Start Time</strong>: {{declined_session.post.sessionRangeStart}}</p>
+                    <p><strong>End Time</strong>: {{declined_session.post.sessionRangeEnd}}</p>
+                    {%if declined_session.post.comments == ""%}
+                      <p><strong>Tutor Comments</strong>: No comments</p>
+                    {%else%}
+                      <p><strong>Tutor Comments</strong>: {{declined_session.post.comments}}</p>
+                    {%endif%}
+                  </div>
+                  <div class="modal-footer">
+                    <input
+                      type="hidden"
+                      name="tutee-email"
+                      value="{{declined_session.tutee.email}}"
+                    />
+                    <input
+                      type="hidden"
+                      name="tutor-email"
+                      value="{{declined_session.creator_email}}"
+                    />
+                    <input type="hidden" name="post-id" value="{{declined_session.post.hash}}" />
+                    <button type="submit" class="btn btn-primary submit-button" name="delete">
+                      Delete Request
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          {% for pending_session in pending_sessions_list %}
+          <li
+            class="list-group-item"
+            onmouseout="this.style.backgroundColor=''; this.style.color='';"
+          >
+            <h5>
+              {{pending_session.post.classes.name}} Session with
+              {{pending_session.post.creatorName}} is pending approval.
+            </h5>
+            <p> </p>
+            <p><strong>Requested Start Time</strong>: {{pending_session.sessionStart}}</p>
+            <p><strong>Requested End Time</strong>: {{pending_session.sessionEnd}}</p>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#pending{{ forloop.counter}}"
+            >
+              View Full Details
+            </button>
+          </li>
+
+
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="pending{{ forloop.counter}}"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">
+                    {{pending_session.post.classes.name}} Session with
+                    {{pending_session.post.creatorName}}
+                  </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                {% comment %} option to delete post here {% endcomment %}
+                <form
+                  class="post-information-form"
+                  method="POST"
+                  action="{% url 'tutorme:deleting_session' %}"
+                  id="post-info-pending{{forloop.count}}"
+                >
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <p><strong>Tutor</strong>: {{pending_session.post.creatorName}}</p>
+                    <p><strong>Hourly Fee</strong>: {{pending_session.post.hourly_fee}}</p>
+                    {%if pending_session.post.online == True%}
+                      <p><strong>In-person or Online</strong>: Online</p>
+                    {%else%}
+                      <p><strong>In-person or Online</strong>: In-person</p>
+                    {%endif%}
+                    <p><strong>Location</strong>: {{pending_session.post.location}}</p>
+                    <p><strong>Start Time</strong>: {{pending_session.post.sessionRangeStart}}</p>
+                    <p><strong>End Time</strong>: {{pending_session.post.sessionRangeEnd}}</p>
+                    {%if pending_session.post.comments == ""%}
+                      <p><strong>Tutor Comments</strong>: No comments</p>
+                    {%else%}
+                      <p><strong>Tutor Comments</strong>: {{pending_session.post.comments}}</p>
+                    {%endif%}
+                    <p><strong>Current Capacity</strong>: {{pending_session.post.current_capacity}} of {{pending_session.post.max_capacity}}</p>
+                  </div>
+                  <div class="modal-footer">
+                    <input type="hidden" name="tutee-email" value="{{pending_session.tutee.email}}" />
+                    <input
+                      type="hidden"
+                      name="tutor-email"
+                      value="{{pending_session.creator_email}}"
+                    />
+                    <input type="hidden" name="post-id" value="{{pending_session.post.hash}}" />
+                    <button type="submit" class="btn btn-primary submit-button" name="delete">
+                      Delete Request
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {%endif%}
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+</body>
