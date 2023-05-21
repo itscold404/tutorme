@@ -4,6 +4,14 @@ University of Virginia,
 CS 3240 S22,
 Group A-04
 
+
+---Contributors---
+Alex Walsh
+Aaryan Dhore
+David Lin
+Emily Branch
+Ethan Schwimmer
+
 --- References ---
 
 Title: Avoid from adding event listeners several times
