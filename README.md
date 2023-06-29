@@ -6,10 +6,10 @@ Group A-04
 
 
 ---Contributors---
-Alex Walsh
-Aaryan Dhore
-David Lin
-Emily Branch
+Alex Walsh,
+Aaryan Dhore,
+David Lin,
+Emily Branch,
 Ethan Schwimmer
 
 --- References ---
