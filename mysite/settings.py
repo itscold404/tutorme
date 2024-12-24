@@ -13,22 +13,25 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 import sys
+import environ
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "0d3+kujrdo@$ff)z&yt7p%80q@swvq0lm1rt^jvy6ux1%1kqyk"
+SECRET_KEY = env('SECRET_KEY', default='key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "project-a-04.herokuapp.com", 'testserver']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "mysite.herokuapp.com", 'testserver']
 
 
 # Application definition
@@ -66,6 +69,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware"
 ]
 
 ROOT_URLCONF = "mysite.urls"
@@ -95,32 +99,32 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 if 'test' in sys.argv:
     # Configuration for test database
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": "d7n6c63qvej740",
-            "USER": "nrtzwuolhhbtts",
-            "PASSWORD": "2dee18f82c4e20780b5361e2ecbd6271dfe6491176f04706dd5e208ba0e33c00",
-            "HOST": "ec2-44-213-151-75.compute-1.amazonaws.com",
-            "PORT": "5432",
-            "TEST": {
-                "NAME": "d7n6c63qvej740",
-            }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env('DB_NAME', default=''),
+        'USER': env('DB_USER', default=''),
+        'PASSWORD': env('DB_PASSWORD', default=''),
+        'HOST': env('DB_HOST', default=''),
+        'PORT': env('DB_PORT', default='5432'),
+        'TEST': {
+            'NAME': env('DB_NAME', default=''), 
         }
     }
+}
 else:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": "d7d0nvegk63d1c",
-            "USER": "jpdbxijaroginh",
-            "PASSWORD": "58e5b9cc24a9e7296a7459fa04c630a024a0fc0137283993e29553b7c7ba4492",
-            "HOST": "ec2-52-205-248-65.compute-1.amazonaws.com",
-            "PORT": "5432",
-            "TEST": {
-                'NAME': 'd7d0nvegk63d1c',
-            }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env('DB_NAME', default=''),
+        'USER': env('DB_USER', default=''),
+        'PASSWORD': env('DB_PASSWORD', default=''),
+        'HOST': env('DB_HOST', default=''),
+        'PORT': env('DB_PORT', default='5432'),
+        'TEST': {
+            'NAME': env('DB_NAME', default=''),  
         }
     }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -185,3 +189,10 @@ SOCIALACCOUNT_PROVIDERS = {
 # SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/tutorme/choose_user_type_page'
 LOGIN_REDIRECT_URL = "/tutorme/choose_user_type"
 LOGOUT_REDIRECT_URL = "/tutorme/login_user"
+
+try:
+    if 'HEROKU' in os.environ:
+        import django_heroku
+        django_heroku.settings(locals())
+except ImportError:
+    found = False

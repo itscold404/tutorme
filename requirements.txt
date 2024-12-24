@@ -25,3 +25,11 @@ google-auth
 
 #for mailbox system
 django-notifications-hq
+
+django-environ
+
+django-heroku
+
+pyjwt
+
+cryptography
